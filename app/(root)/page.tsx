@@ -1,6 +1,8 @@
+import BreakDown from '@/components/BreakDown';
 import Hero from '@/components/Hero';
 import HowSection from '@/components/HowSection';
 import Navbar from '@/components/Navbar';
+import SignIn from '@/components/ui/githubSign-in';
 import React from 'react'
 
 const Page = () => {
@@ -13,7 +15,8 @@ const Page = () => {
       <Hero/>
       </div>
       <HowSection/>
-      
+      <BreakDown  />
+     
     </div>
   )
 }

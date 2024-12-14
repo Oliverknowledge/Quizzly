@@ -3,18 +3,20 @@ import Link from 'next/link'
 import React from 'react'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 
 
 const Navbar = () => {
     const router = useRouter()
   return (
-    <nav className =" w-screen h-[5rem] fixed z-10 flex justify-center items-center flex-col  border-gray-100 border-b">
+    <nav className ="  w-screen h-[5rem] z-10 flex justify-center items-center flex-col bg-white  border-gray-100 border-b">
         <div className = "w-[80%] flex justify-between ">
             <div className = "flex flex-row gap-10 ">
-            
-                <Link href = "/">
-                    <h1 className = "font-semibold tracking-tight text-xl  ">
+
+                <Link href = "/" className = "flex flex-row">
+                    <Image src="/logo.jpeg" alt="logo" width ={40} height={40} className  = "rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm " />
+                    <h1 className = "font-semibold tracking-tight text-xl   ">
                         Quizzly
                     </h1>
                 </Link>

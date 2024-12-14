@@ -1,110 +1,214 @@
-"use client";
-import React from "react";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
+"use client"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Button } from "@/components/ui/button"
+
 import {
-  IconBrandGithub,
-  IconBrandGoogle,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { UserValidation } from "@/validation/user"
+import FileUploader from "./FileUploader"
+import { createUser } from "@/actions/user.actions"
+import { useState } from "react"
+import SignIn from "./ui/githubSign-in"
+import { useRouter } from "next/navigation"
 
-} from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
 
-export function SignupForm() {
+export default function SignupForm() {
+  const [ loading, setLoading ] = useState(false);
+  const [showPassword, setShowPassword ] = useState(false);
   const router = useRouter()
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    router.push("/onboarding")
-  };
+
+  const form = useForm<z.infer<typeof UserValidation>>({
+    resolver: zodResolver(UserValidation),
+    defaultValues: {
+      profile_photo: [],
+      name: "",
+      password: "",
+      email: "",
+      examboard: undefined,
+    },
+  })
+ 
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof UserValidation>) {
+    try{
+      setLoading(true);
+    
+    await createUser({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      examboard: values.examboard,
+      profile_picture:  values.profile_photo?.[0]?.name  || "/DefaultAvatar.jpeg",
+    })
+    setLoading(false);
+    router.push("/dashboard")}
+    catch(error: any){
+      console.log(error.message)
+    }
+  }
+  
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to quizzly
-      </h2>
-      <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        Here&apos;s the start of your exam success
-      </p>
-
-      <form className="my-8" onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-          <LabelInputContainer>
-            <Label htmlFor="firstname">First name</Label>
-            <Input id="firstname" placeholder="Oliver" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="lastname">Last name</Label>
-            <Input id="lastname" placeholder="Stevenson" type="text" />
-          </LabelInputContainer>
-        </div>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="admin@swichly.com" type="email" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
-        </LabelInputContainer>
-        
-
-        <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-          type="submit"
-        >
-          Sign up &rarr;
-          <BottomGradient />
-        </button>
-
-        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-
-        <div className="flex flex-col space-y-4">
-          <button
-            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
-          >
-            <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-              GitHub
-            </span>
-            <BottomGradient />
-          </button>
-          <button
-            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
-          >
-            <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-              Google
-            </span>
-            <BottomGradient />
-          </button>
-          
+    
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <SignIn/>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Oliver Stevenson" {...field} className = "rounded-xl font-semibold hover:bg-[#e7e7e7] pl-4 focus:bg-white  bg-[#f0f0f0] text-[#222222] tracking-wide w-[30rem] h-[3rem]"/>
+              </FormControl>
+              <FormDescription>
+                This is your full name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="hello@quizzly.com" {...field} className = "rounded-xl font-semibold hover:bg-[#e7e7e7] pl-4 focus:bg-white  bg-[#f0f0f0] text-[#222222] tracking-wide w-[30rem] h-[3rem]"/>
+              </FormControl>
+              <FormDescription>
+                This is your email
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+       <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+                <Button type = "button" variant="link" className="absolute translate-x-[20rem] translate-y-[3.25rem] " onClick={() => setShowPassword((prev) => !prev)}>
+                        {showPassword ? "Hide" : "Show"}
+                      </Button>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+              <Input
+                          type={`${showPassword ? "text" : "password"}`}
+                          placeholder="Password"
+                          className={`   
+                            ${!showPassword ? "text-2xl  pb-2 items-center placeholder:text-sm placeholder:tracking-wide placeholder:-translate-y-[0.25rem]" : "placeholder:text-sm placeholder:tracking-normal "}                       
+                            rounded-xl 
+                            font-semibold 
+                            pl-4 
+                            mt-4 
+                            bg-[#f0f0f0] 
+                            focus:bg-white 
+                            hover:bg-[#e7e7e7] 
+                            text-[#222222] 
+                            w-[25rem] 
+                            h-[3rem] 
+                            
+                            
+                          
+                            `}
+                          {...field}
+                 
+                        />
+              </FormControl>
+              <FormDescription>
+                Your password, keep it safe
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
             
-       
+          )}
+        />
+        <div className = "flex flex-row justify-between px-12"> 
+         <FormField
+          control={form.control}
+          name="examboard"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className = "text-lg ">Maths Exam Board</FormLabel>
+              <FormControl>
+              <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1 mt-4"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="Edexcel" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Edexcel
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0 ">
+                    <FormControl>
+                      <RadioGroupItem value="AQA" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      AQA
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="OCR" />
+                    </FormControl>
+                    <FormLabel className="font-normal">OCR</FormLabel>
+                  </FormItem>
+                </RadioGroup>        
+              </FormControl>
+              
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="profile_photo"
+          render={({ field }) => (
+            <FormItem>
+            <FormLabel >
+              <h1 className = "text-center">Profile photo</h1></FormLabel>
+            <FormControl>
+
+                    <FileUploader files={field.value} onChange={field.onChange} />
+              
+                </FormControl>
+              </FormItem>
+          )}
+        />
         </div>
+        {!loading ? (
+        <Button type="submit">Get started</Button>)
+        : (
+          <Button
+          className=" font-semibold text-white text-lg   "
+          disabled
+        >
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="bg-gray-400 rounded-full h-2 w-2 mx-0.5 animate-pulse" />
+          ))}
+        </Button>
+        )
+}   
       </form>
-    </div>
-  );
+    </Form>
+  )
 }
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};

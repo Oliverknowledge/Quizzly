@@ -36,7 +36,7 @@ const   HowSection = () => {
     initial="hidden"
     animate="visible"
     ref = {ref}
-     className = "w-screen h-[40rem] flex mt-10 pt-10 text-white items-center bg-black flex-col gap-4">
+     className = "w-screen h-[60rem] flex mt-10 pt-10 text-white items-center bg-black flex-col gap-4">
         <div className  = " w-[72%] flex flex-col gap-5  items-center">
           <h2 className = "text-5xl ">Why quizzly?</h2>
         <h3 className = "text-md text-gray-400 text-center "> With {" "}
@@ -49,7 +49,7 @@ const   HowSection = () => {
         <motion.div
           animate={isInView ? "visible" : "hidden"}
           variants={itemVariants}
-         className = "flex flex-row gap-10 w-[80%] justify-center mt-10">
+         className = "flex flex-row gap-10 w-[80%] justify-center mt-16">
           <div className = "bg-red-900/20 border-2 border-red-500 w-[40%] h-[20rem] flex flex-col pl-4 rounded-2xl">
             <div className = "flex flex-row w-[90%] justify-between mt-2">
             <h1 className = "font-semibold text-2xl mb-2 mt-1 text-red-600">
@@ -62,7 +62,7 @@ const   HowSection = () => {
             Hours spent on online videos...
             </li>
             <li>
-              Forgetting crucial exam technique...
+              Forgetting methods...
             </li>
             <li>
               Struggling with the time pressure of exams...
@@ -81,13 +81,13 @@ const   HowSection = () => {
             </div>
             <ul className=  "gap-2 text-lg text-[#bbb] mt-2 leading-10  list-disc list-inside">
             <li>
-              Headaches saved
+              Adaptive mock exams
             </li>
             <li>
-              Exam questions, resources stored in one place.
+              Real-time feedback
             </li>
             <li>
-              Personalised AI assisstance
+              Progress tracking
             </li>
             <li>
               Engaging platform
